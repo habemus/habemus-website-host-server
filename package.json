@@ -1,0 +1,28 @@
+{
+  "name": "h-website-server",
+  "version": "0.0.0",
+  "description": "",
+  "main": "server/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "body-parser": "^1.15.2",
+    "bunyan": "^1.8.1",
+    "express": "^4.14.0",
+    "json-message": "^2.0.0-beta.5",
+    "jsonwebtoken": "^7.1.9",
+    "redis": "^2.6.2",
+    "superagent": "^2.2.0",
+    "zip-util": "git+ssh://git@bitbucket.org/habemus-tutti/zip-util.git"
+  },
+  "devDependencies": {
+    "fs-extra": "^0.30.0",
+    "mockery": "^1.7.0",
+    "server-destroy": "^1.0.1",
+    "should": "^11.1.0"
+  }
+}
