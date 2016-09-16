@@ -1,5 +1,6 @@
 // third-party
 const zipUtil = require('zip-util');
+const express = require('express');
 
 module.exports = function (app, options) {
 
@@ -17,8 +18,10 @@ module.exports = function (app, options) {
 
       next();
     },
-    app.middleware.loadWebsite(),
-    app.middleware.loadWebsiteFiles()
+    app.middleware.loadWebsite({
+      hostDomain: options.hostDomain,
+    }),
+    app.middleware.ensureWebsiteReady()
   );
-  app.use('/static', express.static(options.websitesFsRoot));
+  app.use('/static', express.static(options.websitesServerFsRoot));
 };

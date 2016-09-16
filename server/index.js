@@ -15,7 +15,9 @@ function createWebsiteServer(options) {
   }
   // if (!options.rabbitMQURI) { throw new Error('rabbitMQURI is required'); }
   if (!options.redisURI) { throw new Error('redisURI is required'); }
-  if (!options.websitesFsRoot) { throw new Error('websitesFsRoot is required'); }
+  if (!options.websitesStorageFsRoot) { throw new Error('websitesStorageFsRoot is required'); }
+  if (!options.websitesServerFsRoot) { throw new Error('websitesServerFsRoot is required'); }
+  if (!options.hostDomain) { throw new Error('hostDomain is required'); }
 
   /**
    * Option that enables the private API routes.
@@ -46,6 +48,8 @@ function createWebsiteServer(options) {
       require('./app/middleware/authenticate-private-api').bind(null, app);
     app.middleware.loadWebsite =
       require('./app/middleware/load-website').bind(null, app);
+    app.middleware.ensureWebsiteReady =
+      require('./app/middleware/ensure-website-ready').bind(null, app);
     
     // define description route
     app.get('/hello', function (req, res) {

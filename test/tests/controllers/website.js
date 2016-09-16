@@ -80,10 +80,9 @@ describe('websiteCtrl', function () {
     return aux.teardown();
   });
 
-  describe('#loadWebsiteFiles(domain)', function () {
+  describe('#isStorageReady(website)', function () {
+    it('should work', function () {
 
-    it('load the website\'s files into place', function () {
-      return websiteCtrl.loadWebsiteFiles('www.website-1.com');
     });
 
   });

@@ -18,7 +18,9 @@ exports.defaultOptions = {
   redisURI: TEST_REDIS_URI,
   hWebsiteManagerURI: 'http://website-manager-uri.com',
   hWebsiteManagerPrivateAuthToken: 'TOKEN',
-  websitesFsRoot: TMP_PATH + '/websites'
+  websitesStorageFsRoot: TMP_PATH + '/websites-storage',
+  websitesServerFsRoot: TMP_PATH + '/websites-server',
+  hostDomain: 'habemus.website',
 };
 
 /**

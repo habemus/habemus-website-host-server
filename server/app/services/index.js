@@ -11,6 +11,7 @@ module.exports = function (app, options) {
     require('./message-api')(app, options),
     require('./redis')(app, options),
     require('./h-website-manager-private')(app, options),
+    require('./website-setup-manager')(app, options),
   ])
   .then((services) => {
 
@@ -18,6 +19,7 @@ module.exports = function (app, options) {
     app.services.messageAPI = services[1];
     app.services.redis = services[2];
     app.services.hwm = services[3];
+    app.services.websiteSetupManager = services[4];
 
     return;
   });

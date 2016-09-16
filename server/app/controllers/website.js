@@ -1,6 +1,20 @@
+// native
+const fs = require('fs');
+
 // third-party dependencies
 const Bluebird = require('bluebird');
 const zipUtil  = require('zip-util');
+const rimraf   = require('rimraf');
+const cpr      = require('cpr');
+const rootPathBuilder = require('root-path-builder');
+
+// own
+const badgeify = require('../../lib/badgeify');
+
+// promisify
+Bluebird.promisifyAll(fs);
+const rimrafAsync = Bluebird.promisify(rimraf);
+const cprAsync    = Bluebird.promisify(cpr);
 
 // constants
 const CONSTANTS = require('../../../shared/constants');
@@ -8,24 +22,216 @@ const CONSTANTS = require('../../../shared/constants');
 module.exports = function (app, options) {
 
   const errors = app.errors;
+  const HOST_DOMAIN = options.hostDomain;
   const H_WEBSITE_MANAGER_PRIVATE_AUTH_TOKEN = options.hWebsiteManagerPrivateAuthToken;
-  const WEBSITES_FS_ROOT = options.websitesFsRoot;
+
+  const WEBSITES_STORAGE_FS_ROOT = options.websitesStorageFsRoot;
+  const WEBSITES_SERVER_FS_ROOT = options.websitesServerFsRoot;
+
+  /**
+   * Root path builders
+   */
+  const storageSrcRoot = rootPathBuilder(WEBSITES_STORAGE_FS_ROOT + '/src');
+  const storageBadgedRoot = rootPathBuilder(WEBSITES_STORAGE_FS_ROOT + '/badged');
+  const serverRoot = rootPathBuilder(WEBSITES_SERVER_FS_ROOT);
 
   var websiteCtrl = {};
 
-  websiteCtrl.loadWebsiteFiles = function (domain) {
-    if (!domain) {
-      return Bluebird.reject(new errors.InvalidOption('domain', 'required'));
+  websiteCtrl.unlinkStorage = function (website) {
+
+    var srcDirPath = storageSrcRoot.prependTo(website._id);
+    var badgedDirPath = storageBadgedRoot.prependTo(website._id);
+
+    return Bluebird.all([
+      rimrafAsync(badgedDirPath),
+      rimrafAsync(srcDirPath),
+    ])
+    .then(() => {
+      return;
+    });
+  };
+
+  websiteCtrl.unlinkServers = function (domains) {
+
+    if (!domains) {
+      return Bluebird.reject(new errors.InvalidOption('domains', 'required'));
     }
 
-    var websiteRootPath = WEBSITES_FS_ROOT + '/' + domain;
+    domains = Array.isArray(domains) ? domains : [domains];
 
-    return app.services.hwm.getWebsite(
-        H_WEBSITE_MANAGER_PRIVATE_AUTH_TOKEN,
-        domain
-      )
-      .then((website) => {
-        return zipUtil.zipDownload(website.zipSignedURL, websiteRootPath);
+    return Bluebird.all(domains.map((domain) => {
+
+      var serverSymlinkPath = serverRoot.prependTo(domain);
+
+      return fs.unlinkAsync(serverSymlinkPath);
+    }))
+    .then(() => {
+      return;
+    });
+  };
+
+  /**
+   * Checks whether the files are in storage
+   * takes into account that websites may need the badged version
+   * depending on their billing statuses
+   * 
+   * @param  {Object}  website
+   * @return {Boolean}
+   */
+  websiteCtrl.isStorageReady = function (website) {
+
+    if (!website) {
+      return Bluebird.reject(new errors.InvalidOption('website', 'required'));
+    }
+
+    var srcDirPath = storageSrcRoot.prependTo(website._id);
+    var badgedDirPath = storageBadgedRoot.prependTo(website._id);
+
+    // list of checks that need to be performed
+    var checks = [];
+    // src dir check is always required
+    checks.push(fs.lstatAsync(srcDirPath));
+
+    // whether the website is a free website or has the billing
+    // in pending mode
+    var useBadgedVersion = website.billingStatus.value !== 'enabled';
+
+    if (useBadgedVersion) {
+      checks.push(fs.lstatAsync(badgedDirPath));
+    }
+
+    return Bluebird.all(checks)
+      .then((results) => {
+        return results.every((stat) => {
+          return stat.isDirectory();
+        });
+      })
+      .catch((err) => {
+        // TODO: check error type
+        return false;
+
+      });
+
+  };
+
+  /**
+   * Checks whether the servers files are in place
+   * 
+   * @param  {Object} website
+   * @return {Bluebird -> Boolean}
+   */
+  websiteCtrl.areServersReady = function (website) {
+
+    if (!website || !website.activeDomainRecords) {
+      return Bluebird.reject(new errors.InvalidOption('website', 'required'));
+    }
+
+    var subdomainDirPath = serverRoot.prependTo(website.code + '.' + HOST_DOMAIN);
+    var customDomainDirPaths = website.activeDomainRecords.map((record) => {
+      return serverRoot.prependTo(record.domain);
+    });
+
+    var _allDomainsDirPaths = customDomainDirPaths.concat([subdomainDirPath]);
+
+    return Bluebird.all(_allDomainsDirPaths.map((domainDirPath) => {
+
+      return fs.lstatAsync(domainDirPath);
+
+    }))
+    .then((stats) => {
+      return stats.every((stat) => {
+        return stat.isSymbolicLink();
+      });
+    });
+  };
+
+  /**
+   * Runs the full process of loading the website's files into
+   * src storage and compiling the badged storage (if necessary).
+   * 
+   * @param  {Object} website
+   * @return {Bluebird}
+   */
+  websiteCtrl.setupStorage = function (website) {
+    if (!website || !website._id) {
+      return Bluebird.reject(new errors.InvalidOption('website', 'required'));
+    }
+
+    var srcDirPath    = storageSrcRoot.prependTo(website._id);
+    var badgedDirPath = storageBadgedRoot.prependTo(website._id);
+
+    // whether the website is a free website or has the billing
+    // in pending mode
+    var useBadgedVersion = website.billingStatus.value !== 'enabled';
+
+    // first load the files into the srcStorage (untransformed files)
+    return zipUtil.zipDownload(website.readSignedURL, srcDirPath)
+      .then(() => {
+
+        if (useBadgedVersion) {
+
+          // copy the files into the badgedDir
+          return cprAsync(srcDirPath, badgedDirPath, {
+            deleteFirst: true,
+            overwrite: true,
+            confirm: true,
+          })
+          .then((copiedFiles) => {
+            return badgeify(badgedDirPath);
+          });
+
+        } else {
+          return;
+        }
+
+      });
+  };
+
+  /**
+   * Ensures storages are ready and sets up the symlinking.
+   * Takes into account the website's billing status
+   * 
+   * @param  {Object} website
+   * @return {Bluebird -> undefined}
+   */
+  websiteCtrl.setupServers = function (website) {
+    if (!website || !website._id ||
+        !website.activeDomainRecords || !website.code) {
+      return Bluebird.reject(new errors.InvalidOption('website', 'required'));
+    }
+
+    var srcDirPath    = storageSrcRoot.prependTo(website._id);
+    var badgedDirPath = storageBadgedRoot.prependTo(website._id);
+
+    // whether the website is a free website or has the billing
+    // in pending mode
+    var useBadgedVersion = website.billingStatus.value !== 'enabled';
+
+    return websiteCtrl.isStorageReady(website)
+      .then((isLoaded) => {
+        if (!isLoaded) {
+          return websiteCtrl.unlinkStorage(website).then(() => {
+            return websiteCtrl.setupStorage(website);
+          });
+        }
+      })
+      .then(() => {
+
+        // link the 'subdomain-server' to the source version of the website
+        var subdomainDirPath = serverRoot.prependTo(website.code + '.' + HOST_DOMAIN);
+        var subdomainServerPromise = fs.symlinkAsync(srcDirPath, subdomainDirPath, 'dir');
+
+        // make the active domain records to the correct version (badged or unbadged)
+        var customDomainStoragePath = useBadgedVersion ? badgedDirPath : srcDirPath;
+        var customDomainServerPromises = website.activeDomainRecords.map((record) => {
+          var domainDirPath = serverRoot.prependTo(record.domain);
+          return fs.symlinkAsync(customDomainStoragePath, domainDirPath, 'dir');
+        });
+
+        return Bluebird.all(customDomainServerPromises.concat([subdomainServerPromise]));
+      })
+      .then((results) => {
+        return;
       });
   };
 
