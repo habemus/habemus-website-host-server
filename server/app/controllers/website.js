@@ -153,7 +153,7 @@ module.exports = function (app, options) {
    * @return {Bluebird}
    */
   websiteCtrl.setupStorage = function (website) {
-    if (!website || !website._id) {
+    if (!website || !website._id || !website.readSignedURL) {
       return Bluebird.reject(new errors.InvalidOption('website', 'required'));
     }
 

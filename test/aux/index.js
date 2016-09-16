@@ -5,11 +5,18 @@ const http = require('http');
 // third-party dependencies
 const enableDestroy = require('server-destroy');
 const Bluebird = require('bluebird');
+const fse = require('fs-extra');
+
+// own deps
+const fileServer = require('./file-server');
 
 const TEST_REDIS_URI = 'redis://192.168.99.100:6379';
 const FIXTURES_PATH = path.join(__dirname, '../fixtures');
 const TMP_PATH = path.join(__dirname, '../tmp');
 
+const FILE_SERVER_PORT = 9000;
+
+exports.fileServerURI = 'http://localhost:9000';
 exports.fixturesPath = FIXTURES_PATH;
 exports.tmpPath = TMP_PATH;
 
@@ -91,7 +98,20 @@ exports.setup = function () {
 
   var _assets = {};
 
-  return Bluebird.resolve(_assets);
+  fse.emptyDirSync(TMP_PATH);
+
+  exports.registerTeardown(function () {
+    fse.emptyDirSync(TMP_PATH);
+  });
+
+  // start the file server
+  return exports.startServer(FILE_SERVER_PORT, fileServer({
+    filesDir: FIXTURES_PATH,
+    uploadsDir: TMP_PATH,
+  }))
+  .then(() => {
+    return _assets
+  });
 };
 
 var TEARDOWN_CALLBACKS = [];

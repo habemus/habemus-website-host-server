@@ -3,7 +3,7 @@ const path = require('path');
 
 // third-party
 const express = require('express');
-const multer  = require('multer');
+// const multer  = require('multer');
 
 module.exports = function (options) {
 
@@ -27,15 +27,16 @@ module.exports = function (options) {
 
 
   /**
+   * We do not need upload for now
    * Upload files
    */
-  var upload = multer({ dest: uploadsDir })
-  app.post('/uploads',
-    upload.single('file'),
-    function (req, res, next) {
-      res.status(201).json(req.file);
-    }
-  );
+  // var upload = multer({ dest: uploadsDir })
+  // app.post('/uploads',
+  //   upload.single('file'),
+  //   function (req, res, next) {
+  //     res.status(201).json(req.file);
+  //   }
+  // );
 
   return app;
 };

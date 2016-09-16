@@ -5,6 +5,7 @@ const path = require('path');
 const Bluebird    = require('bluebird');
 const vinylFs     = require('vinyl-fs');
 const gulpPlumber = require('gulp-plumber');
+const gulpIf      = require('gulp-if');
 
 /**
  * Our mini-plugin that appends html strings to the end of the body tag
@@ -46,12 +47,11 @@ function badgeify(dirPath) {
   return new Bluebird((resolve, reject) => {
 
     vinylFs.src(glob)
-      .pipe(gulpIf(isIndexHTML))
-      .pipe(gulpAppendHTML({
+      .pipe(gulpIf(isIndexHTML, gulpAppendHTML({
         html: [
           '<div>Heeeey!</div>'
         ],
-      }))
+      })))
       .pipe(vinylFs.dest(dirPath))
       .on('error', reject)
       .on('end', resolve);

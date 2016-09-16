@@ -38,10 +38,7 @@ function insertHTML(options) {
       }
 
       // regenerate the html and set the result as the file's contents
-      file.contents = $.html();
-
-      // set contents onto the vinyl file
-      file.contents = res;
+      file.contents = new Buffer($.html());
     }
     if (file.isStream()) {
       throw new Error('gulp-append-html', 'Streams not currently supported');
