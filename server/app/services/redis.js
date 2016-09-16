@@ -17,7 +17,7 @@ module.exports = function (app, options) {
     redisClient.once('error', _reject);
 
     function off () {
-      redisClient.removeListener('ready', resolve);
+      redisClient.removeListener('ready', _resolve);
       redisClient.removeListener('error', _reject);
     }
 

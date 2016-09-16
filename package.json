@@ -17,6 +17,7 @@
     "jsonwebtoken": "^7.1.9",
     "redis": "^2.6.2",
     "superagent": "^2.2.0",
+    "url-pattern": "^1.0.1",
     "zip-util": "git+ssh://git@bitbucket.org/habemus-tutti/zip-util.git"
   },
   "devDependencies": {

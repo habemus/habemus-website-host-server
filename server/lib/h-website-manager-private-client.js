@@ -10,14 +10,23 @@ function WebsiteManagerPrivateClient(options) {
   this.serverURI = options.serverURI.replace(TRAILING_SLASH_RE, '');
 }
 
-WebsiteManagerPrivateClient.prototype.getWebsite = function (authToken, domain) {
+WebsiteManagerPrivateClient.prototype.getWebsite = function (authToken, identifier, identifierProp) {
+
+  identifierProp = identifierProp || 'activeDomain';
+
+  var query = {};
+
+  if (identifierProp === 'activeDomain') {
+    query.byActiveDomain = true;
+  } else if (identifierProp === 'code') {
+    query.byCode = true;
+  }
+
   return new Bluebird((resolve, reject) => {
     superagent
-      .get(this.serverURI)
-      .set('X-Private-Authorization', 'Bearer ' + authToken)
-      .query({
-        withSignedURL: true,
-      })
+      .get(this.serverURI + '/_/website/' + identifier)
+      .set('Authorization', 'Bearer ' + authToken)
+      .query(query)
       .end((err, res) => {
 
         if (err) {
