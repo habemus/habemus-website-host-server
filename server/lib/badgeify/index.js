@@ -49,7 +49,7 @@ function badgeify(dirPath) {
     vinylFs.src(glob)
       .pipe(gulpIf(isIndexHTML, gulpAppendHTML({
         html: [
-          '<div>Heeeey!</div>'
+          '<div id="test">Heeeey!</div>'
         ],
       })))
       .pipe(vinylFs.dest(dirPath))

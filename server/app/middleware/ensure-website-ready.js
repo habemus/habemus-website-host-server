@@ -8,7 +8,7 @@ module.exports = function (app, options) {
 
   options = options || {};
 
-  return function lazyLoadWebsite(req, res, next) {
+  return function ensureWebsiteReady(req, res, next) {
 
     var website = req.website;
 

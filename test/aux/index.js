@@ -99,6 +99,8 @@ exports.setup = function () {
   var _assets = {};
 
   fse.emptyDirSync(TMP_PATH);
+  fse.emptyDirSync(TMP_PATH + '/websites-storage');
+  fse.emptyDirSync(TMP_PATH + '/websites-server');
 
   exports.registerTeardown(function () {
     fse.emptyDirSync(TMP_PATH);

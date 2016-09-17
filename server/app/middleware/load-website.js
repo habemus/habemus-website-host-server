@@ -5,6 +5,7 @@ const URLPattern = require('url-pattern');
 // returns the middleware
 module.exports = function (app, options) {
 
+  const AUTH_TOKEN  = options.hWebsiteManagerPrivateAuthToken;
   const HOST_DOMAIN = options.hostDomain;
   const hostPattern = new URLPattern(':code.' + HOST_DOMAIN);
 
@@ -48,19 +49,33 @@ module.exports = function (app, options) {
 
     if (code) {
       // retrieve the website by its code
-      app.services.hWebsiteManagerPrivate.getWebsite(code, 'byCode')
+      app.services.hwm.getWebsite(AUTH_TOKEN, code, 'byCode')
         .then((website) => {
           req.website = website;
+          next();
         })
-        .catch(next);
+        .catch((err) => {
+          if (err.name === 'NotFound') {
+            next(new errors.WebsiteNotFound('website', code));
+          } else {
+            next(err);
+          }
+        });
 
     } else {
       // retrieve the website by the domain
-      app.services.hWebsiteManagerPrivate.getWebsite(domain, 'byActiveDomain')
+      app.services.hwm.getWebsite(AUTH_TOKEN, domain, 'byActiveDomain')
         .then((website) => {
           req.website = website;
+          next();
         })
-        .catch(next);
+        .catch((err) => {
+          if (err.name === 'NotFound') {
+            next(new errors.WebsiteNotFound('website', domain));
+          } else {
+            next(err);
+          }
+        });
     }
 
   };

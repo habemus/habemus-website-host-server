@@ -1,7 +1,7 @@
 // third-party
 const Bluebird = require('bluebird');
 
-const WebsiteManagerPrivateClient = require('../../lib/h-website-manager-private-client');
+const WebsiteManagerPrivateClient = require('h-website-manager/client/private');
 
 module.exports = function (app, options) {
 

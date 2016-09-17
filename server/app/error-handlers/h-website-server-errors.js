@@ -1,8 +1,14 @@
+// native
+const fs = require('fs');
+const path = require('path');
+
 // constants
 const ERROR_DATA = {
   name: true,
   message: true
 };
+
+const WEBSITE_NOT_FOUND_TEMPLATE = fs.readFileSync(path.join(__dirname, '../templates/website-not-found.html'), 'utf8');
 
 module.exports = function (app, options) {
 
@@ -38,7 +44,11 @@ module.exports = function (app, options) {
           });
           res.status(404).json(msg);
           break;
+        case 'WebsiteNotFound':
+          res.status(404).send(WEBSITE_NOT_FOUND_TEMPLATE);
+          break;
         default:
+          console.log(err);
           next(err);
           break;
       }

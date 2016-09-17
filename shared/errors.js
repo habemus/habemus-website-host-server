@@ -66,6 +66,18 @@ function NotFound(resource, resourceId) {
 util.inherits(NotFound, HWebsiteServerError);
 NotFound.prototype.name = 'NotFound';
 
+/**
+ * Happens whenever the whole website is not found.
+ */
+function WebsiteNotFound(websiteIdentifier) {
+  HWebsiteServerError.call(this, 'website not found');
+
+  this.resourceId = websiteIdentifier;
+}
+util.inherits(WebsiteNotFound, HWebsiteServerError);
+WebsiteNotFound.prototype.name = 'WebsiteNotFound';
+
 exports.Unauthorized = Unauthorized;
 exports.InvalidToken = InvalidToken;
 exports.NotFound = NotFound;
+exports.WebsiteNotFound = WebsiteNotFound;

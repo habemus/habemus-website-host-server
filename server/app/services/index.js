@@ -14,7 +14,7 @@ module.exports = function (app, options) {
     require('./website-setup-manager')(app, options),
   ])
   .then((services) => {
-
+    
     app.services.logging = services[0];
     app.services.messageAPI = services[1];
     app.services.redis = services[2];

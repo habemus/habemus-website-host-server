@@ -51,13 +51,23 @@ module.exports = function (app, options) {
     });
   };
 
-  websiteCtrl.unlinkServers = function (domains) {
+  websiteCtrl.unlinkServers = function (website) {
 
-    if (!domains) {
-      return Bluebird.reject(new errors.InvalidOption('domains', 'required'));
+    if (!website) {
+      return Bluebird.reject(new errors.InvalidOption('website', 'required'));
     }
 
-    domains = Array.isArray(domains) ? domains : [domains];
+    /**
+     * List of domains that the website has.
+     * Starts with the combination of website.code + hostdomain
+     * @type {Array}
+     */
+    var domains = [website.code + '.' + HOST_DOMAIN];
+    var activeDomainRecords = website.activeDomainRecords || [];
+
+    activeDomainRecords.forEach((record) => {
+      domains.push(record.domain);
+    });
 
     return Bluebird.all(domains.map((domain) => {
 
@@ -67,6 +77,15 @@ module.exports = function (app, options) {
     }))
     .then(() => {
       return;
+    })
+    .catch((err) => {
+
+      if (err.code === 'ENOENT') {
+        // the link did not exist anyway
+        return;
+      } else {
+        return Bluebird.reject(err);
+      }
     });
   };
 
@@ -142,6 +161,13 @@ module.exports = function (app, options) {
       return stats.every((stat) => {
         return stat.isSymbolicLink();
       });
+    })
+    .catch((err) => {
+      if (err.code === 'ENOENT') {
+        return false;
+      } else {
+        return Bluebird.reject(err);
+      }
     });
   };
 
@@ -164,8 +190,12 @@ module.exports = function (app, options) {
     // in pending mode
     var useBadgedVersion = website.billingStatus.value !== 'enabled';
 
-    // first load the files into the srcStorage (untransformed files)
-    return zipUtil.zipDownload(website.readSignedURL, srcDirPath)
+    // first clear up paths requried for the storage
+    return websiteCtrl.unlinkStorage(website)
+      .then(() => {
+        // load the files into the srcStorage (untransformed files)
+        return zipUtil.zipDownload(website.readSignedURL, srcDirPath)
+      })
       .then(() => {
 
         if (useBadgedVersion) {
@@ -214,6 +244,11 @@ module.exports = function (app, options) {
             return websiteCtrl.setupStorage(website);
           });
         }
+      })
+      .then(() => {
+
+        // remove remaining symlinks
+        return websiteCtrl.unlinkServers(website);
       })
       .then(() => {
 
