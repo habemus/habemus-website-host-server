@@ -2,6 +2,12 @@
 const amqplib  = require('amqplib');
 const Bluebird = require('bluebird');
 
+const EVENT_QUEUE_OPTIONS = {
+  exclusive: true,
+  durable: false,
+  autoDelete: true,
+};
+
 module.exports = function (app, options) {
 
   const RABBIT_MQ_URI = options.rabbitMQURI;
@@ -59,7 +65,10 @@ module.exports = function (app, options) {
         channel.assertExchange(EXCHANGE_NAME, 'topic'),
 
         // updated queue
-        channel.assertQueue(UPDATED_QUEUE),
+        channel.assertQueue(
+          UPDATED_QUEUE,
+          EVENT_QUEUE_OPTIONS
+        ),
         channel.bindQueue(
           UPDATED_QUEUE,
           EXCHANGE_NAME,
@@ -67,7 +76,10 @@ module.exports = function (app, options) {
         ),
 
         // created queue
-        channel.assertQueue(CREATED_QUEUE),
+        channel.assertQueue(
+          CREATED_QUEUE,
+          EVENT_QUEUE_OPTIONS
+        ),
         channel.bindQueue(
           CREATED_QUEUE,
           EXCHANGE_NAME,
@@ -75,7 +87,10 @@ module.exports = function (app, options) {
         ),
 
         // deleted queue
-        channel.assertQueue(DELETED_QUEUE),
+        channel.assertQueue(
+          DELETED_QUEUE,
+          EVENT_QUEUE_OPTIONS
+        ),
         channel.bindQueue(
           DELETED_QUEUE,
           EXCHANGE_NAME,
