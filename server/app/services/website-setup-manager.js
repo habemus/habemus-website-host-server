@@ -6,33 +6,12 @@
  */
 
 // third-party
-const Bluebird = require('bluebird');
+const Bluebird       = require('bluebird');
+const cachePromiseFn = require('cache-promise-fn');
 
 module.exports = function (app, options) {
 
   var setupManager = {};
-
-  /**
-   * Array of promise descriptors of file loading operations
-   * 
-   * @type {Array}
-   */
-  var _loadingPromiseDescriptors = [];
-
-  function _findLoadingPromise(website) {
-    var descriptor = _loadingPromiseDescriptors.find((descriptor) => {
-      return descriptor.websiteId === website._id;
-    });
-
-    return descriptor ? descriptor.promise : null;
-  }
-
-  function _registerLoadingPromise(website, promise) {
-    _loadingPromiseDescriptors.push({
-      websiteId: website._id,
-      promise: promise,
-    });
-  }
 
   /**
    * Checks whether there is a load request in process.
@@ -47,32 +26,47 @@ module.exports = function (app, options) {
    *           - value
    * @return {Bluebird -> undefined}
    */
-  setupManager.ensureReady = function (website) {
-
-    var promise = _findLoadingPromise(website);
-
-    if (!promise) {
-
-      promise = app.controllers.website.areServersReady(website)
+  setupManager.ensureReady = cachePromiseFn(
+    function (website) {
+      return app.controllers.website.areServersReady(website)
         .then((serversReady) => {
           if (!serversReady) {
             return app.controllers.website.setupServers(website);
           }
         });
-
-      _registerLoadingPromise(website, promise);
-
+    }, 
+    {
+      cacheKey: function (website) {
+        return website._id;
+      }
     }
+  );
 
-    return promise;
-  };
+  /**
+   * Remvoes files and links for the website
+   */
+  setupManager.ensureRemoved = cachePromiseFn(
+    function (website) {
 
-  setupManager.ensureRemoved = function (website) {
-
-  };
+      return Bluebird.all([
+        app.controllers.website.unlinkServers(website),
+        app.controllers.website.unlinkStorage(website),
+      ])
+      .then(() => {
+        return;
+      });
+    },
+    {
+      cacheKey: function (website) {
+        return website._id;
+      }
+    }
+  );
 
   setupManager.reset = function (website) {
-
+    return setupManager.ensureRemoved(website).then(() => {
+      return setupManager.ensureReady(website);
+    });
   };
 
   return setupManager;

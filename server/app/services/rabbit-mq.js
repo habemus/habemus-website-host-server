@@ -22,9 +22,17 @@ module.exports = function (app, options) {
    * Routing keys
    * @type {String}
    */
-  const UPDATED_RK = 'website.updated';
-  const CREATED_RK = 'website.created';
-  const DELETED_RK = 'website.deleted';
+  const UPDATED_RK = 'website.updated.#';
+  const DELETED_RK = 'website.deleted.#';
+
+  /**
+   * The active website range defines which websites
+   * the server should load at creation.
+   * By default, follows all ranges '#'
+   * @type {String}
+   */
+  const WEBSITE_RANGE = options.activeWebsiteRange || '#';
+  const CREATED_RK = 'website.created.' + WEBSITE_RANGE;
 
   /**
    * Queue names
@@ -94,7 +102,7 @@ module.exports = function (app, options) {
         channel.bindQueue(
           DELETED_QUEUE,
           EXCHANGE_NAME,
-          CREATED_RK
+          DELETED_RK
         )
       ])
     })

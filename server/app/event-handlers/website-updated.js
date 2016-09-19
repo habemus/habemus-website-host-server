@@ -18,7 +18,7 @@ module.exports = function (app, options) {
       rabbitMQSvc.channel.nack(message, false, false);
 
       app.services.logging.error(
-        'event:website-updated - received unsupported message type/format',
+        'event:website.updated - received unsupported message type/format',
         e
       );
 
@@ -34,17 +34,26 @@ module.exports = function (app, options) {
      */
     var website = payload.website;
 
-    Bluebird.all([
-      app.controllers.website.unlinkStorage(website),
-      app.controllers.website.unlinkServers(website),
-    ])
-    .then(() => {
-      return app.controllers.website.setupServers(website);
-    })
-    .then(() => {
-      console.log('servers set up', website);
-      return rabbitMQSvc.channel.ack(message);
-    });
+    /**
+     * Check whether the website exists in this server.
+     * If so, reset it, otherwise ignore the update
+     */
+    app.controllers.website.isWebsiteInServer(website)
+      .then((isInServer) => {
+        if (isInServer) {
+          return app.services.websiteSetupManager.reset(website);
+        } else {
+          return;
+        }
+      })
+      .then(() => {
+        app.services.logging.info('event:website.updated - event handled', website);
+        return rabbitMQSvc.channel.ack(message);
+      })
+      .catch(() => {
+        // nack and requeue, so that we can try again
+        return rabbitMQSvc.channel.nack(message, false, true);
+      });
   }
 
   return rabbitMQSvc.channel.consume(

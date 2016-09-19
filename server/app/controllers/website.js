@@ -90,6 +90,17 @@ module.exports = function (app, options) {
   };
 
   /**
+   * Proxy method that verifies if the server handles
+   * the given website.
+   * 
+   * @param  {Object}  website
+   * @return {Bluebird -> Boolean}
+   */
+  websiteCtrl.isWebsiteInServer = function (website) {
+    return websiteCtrl.isStorageReady(website);
+  };
+
+  /**
    * Checks whether the files are in storage
    * takes into account that websites may need the badged version
    * depending on their billing statuses

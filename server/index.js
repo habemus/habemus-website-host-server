@@ -4,6 +4,7 @@ const uuid    = require('uuid');
 
 // own
 const setupServices = require('./app/services');
+const setupEventHandlers = require('./app/event-handlers');
 
 /**
  * Function that starts the host server
@@ -68,11 +69,9 @@ function createWebsiteServer(options) {
     app.cron = {};
 
     // load event-handlers
-    require('./app/event-handlers')(app, options).then(() => {
-      console.log('event-handlers ready');
+    return setupEventHandlers(app, options).then(() => {
+      return app;
     });
-
-    return app;
   });
 
   return app;
