@@ -1,3 +1,10 @@
+/**
+ * The setup manager ensures that
+ * the loading process for a website is not executed
+ * by two (or more) processes. It merges requests
+ * for loading and destroying websites
+ */
+
 // third-party
 const Bluebird = require('bluebird');
 
@@ -58,6 +65,13 @@ module.exports = function (app, options) {
     }
 
     return promise;
+  };
+
+  setupManager.ensureRemoved = function (website) {
+
+  };
+
+  setupManager.reset = function (website) {
 
   };
 

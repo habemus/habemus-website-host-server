@@ -65,10 +65,20 @@ describe('server initialization', function () {
     });
   });
 
-  it('should require redisURI', function () {
+  it('should require rabbitMQURI', function () {
     var opts = aux.genOptions();
 
-    delete opts.redisURI;
+    delete opts.rabbitMQURI;
+
+    assert.throws(function () {
+      createWebsiteServer(opts);
+    });
+  });
+
+  it('should require websiteEventsExchange', function () {
+    var opts = aux.genOptions();
+
+    delete opts.websiteEventsExchange;
 
     assert.throws(function () {
       createWebsiteServer(opts);

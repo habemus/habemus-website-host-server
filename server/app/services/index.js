@@ -9,7 +9,7 @@ module.exports = function (app, options) {
   return Bluebird.all([
     require('./logging')(app, options),
     require('./message-api')(app, options),
-    require('./redis')(app, options),
+    require('./rabbit-mq')(app, options),
     require('./h-website-manager-private')(app, options),
     require('./website-setup-manager')(app, options),
   ])
@@ -17,7 +17,7 @@ module.exports = function (app, options) {
     
     app.services.logging = services[0];
     app.services.messageAPI = services[1];
-    app.services.redis = services[2];
+    app.services.rabbitMQ = services[2];
     app.services.hwm = services[3];
     app.services.websiteSetupManager = services[4];
 

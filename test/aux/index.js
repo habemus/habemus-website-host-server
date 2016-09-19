@@ -10,7 +10,7 @@ const fse = require('fs-extra');
 // own deps
 const fileServer = require('./file-server');
 
-const TEST_REDIS_URI = 'redis://192.168.99.100:6379';
+const RABBIT_MQ_URI = 'amqp://192.168.99.100';
 const FIXTURES_PATH = path.join(__dirname, '../fixtures');
 const TMP_PATH = path.join(__dirname, '../tmp');
 
@@ -22,7 +22,8 @@ exports.tmpPath = TMP_PATH;
 
 exports.defaultOptions = {
   apiVersion: '0.0.0',
-  redisURI: TEST_REDIS_URI,
+  rabbitMQURI: RABBIT_MQ_URI,
+  websiteEventsExchange: 'website-events',
   hWebsiteManagerURI: 'http://website-manager-uri.com',
   hWebsiteManagerPrivateAuthToken: 'TOKEN',
   websitesStorageFsRoot: TMP_PATH + '/websites-storage',
