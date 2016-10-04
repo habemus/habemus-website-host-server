@@ -212,7 +212,7 @@ describe('GET /websites/:domain/**/*', function () {
           .end((err, res) => {
             if (err) {
 
-              var errorPagePath = path.join(__dirname, '../../../server/app/templates/website-not-found.html');
+              var errorPagePath = path.join(__dirname, '../../../server/templates/website-not-found.html');
               var errorPage = fs.readFileSync(errorPagePath, 'utf8');
 
               res.statusCode.should.eql(404);

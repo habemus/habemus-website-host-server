@@ -6,24 +6,9 @@ const aux = require('./aux');
 
 module.exports = function (app, options) {
 
-  const rabbitMQSvc = app.services.rabbitMQ;
+  app.services.hWebsiteEventsConsumer.on('updated', function handleUpdated(payload) {
 
-  function handleUpdated(message) {
-
-    try {
-      var payload = aux.parseMessagePayload(message);
-    } catch (e) {
-      // message is invalid
-      // nack the message and DO NOT requeue
-      rabbitMQSvc.channel.nack(message, false, false);
-
-      app.services.logging.error(
-        'event:website.updated - received unsupported message type/format',
-        e
-      );
-
-      return;
-    }
+    console.log('handle updated!', payload);
 
     /**
      * The website's data comes in the `.website` property of 
@@ -40,24 +25,24 @@ module.exports = function (app, options) {
      */
     app.controllers.website.isWebsiteInServer(website)
       .then((isInServer) => {
-        if (isInServer) {
+        // if (isInServer) {
           return app.services.websiteSetupManager.reset(website);
-        } else {
-          return;
-        }
+        // } else {
+          // return;
+        // }
       })
       .then(() => {
         app.services.logging.info('event:website.updated - event handled', website);
-        return rabbitMQSvc.channel.ack(message);
       })
-      .catch(() => {
-        // nack and requeue, so that we can try again
-        return rabbitMQSvc.channel.nack(message, false, true);
-      });
-  }
+      .catch((err) => {
 
-  return rabbitMQSvc.channel.consume(
-    rabbitMQSvc.websiteEventQueues.updated,
-    handleUpdated
-  );
+        app.services.logging.error('event:website.updated error', err);
+
+        // TODO: study requeuing for h-mq-events!!!
+        // nack and requeue, so that we can try again
+        // return rabbitMQSvc.channel.nack(message, false, true);
+      });
+  })
+
+
 };

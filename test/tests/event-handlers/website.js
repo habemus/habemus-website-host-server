@@ -65,7 +65,7 @@ describe('website events', function () {
           reason: 'TestFailureReason',
         },
         activeDomainRecords: [],
-        readSignedURL: 'http://localhost:9000/files/website-1.com.zip',
+        signedURL: 'http://localhost:9000/files/website-1.com.zip',
       }
 
       var websiteV2 = {
@@ -80,7 +80,7 @@ describe('website events', function () {
             domain: 'website-1.com'
           }
         ],
-        readSignedURL: 'http://localhost:9000/files/website-1.com.zip',
+        signedURL: 'http://localhost:9000/files/website-1.com.zip',
       };
 
       // load the v1 of the website into place
@@ -128,7 +128,7 @@ describe('website events', function () {
           reason: 'TestFailureReason',
         },
         activeDomainRecords: [],
-        readSignedURL: 'http://localhost:9000/files/website-1.com.zip',
+        signedURL: 'http://localhost:9000/files/website-1.com.zip',
       };
 
       // publish an update
@@ -172,7 +172,7 @@ describe('website events', function () {
           reason: 'TestFailureReason',
         },
         activeDomainRecords: [],
-        readSignedURL: 'http://localhost:9000/files/website-1.com.zip',
+        signedURL: 'http://localhost:9000/files/website-1.com.zip',
       };
 
       // load the website into place
@@ -226,7 +226,7 @@ describe('website events', function () {
           reason: 'TestFailureReason',
         },
         activeDomainRecords: [],
-        readSignedURL: 'http://localhost:9000/files/website-1.com.zip',
+        signedURL: 'http://localhost:9000/files/website-1.com.zip',
       };
 
       // publish a deletion
@@ -269,7 +269,7 @@ describe('website events', function () {
           reason: 'TestFailureReason',
         },
         activeDomainRecords: [],
-        readSignedURL: 'http://localhost:9000/files/website-1.com.zip',
+        signedURL: 'http://localhost:9000/files/website-1.com.zip',
       };
 
       // publish a deletion

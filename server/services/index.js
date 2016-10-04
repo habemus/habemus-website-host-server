@@ -10,7 +10,7 @@ module.exports = function (app, options) {
     require('./logging')(app, options),
     require('./message-api')(app, options),
     require('./rabbit-mq')(app, options),
-    require('./h-website-manager-private')(app, options),
+    require('./h-website')(app, options),
     require('./website-setup-manager')(app, options),
   ])
   .then((services) => {
@@ -18,8 +18,17 @@ module.exports = function (app, options) {
     app.services.logging = services[0];
     app.services.messageAPI = services[1];
     app.services.rabbitMQ = services[2];
-    app.services.hwm = services[3];
+    app.services.hWebsite = services[3];
     app.services.websiteSetupManager = services[4];
+
+    // setup second batch of services
+    return Bluebird.all([
+      require('./h-website-events-consumer')(app, options),
+    ]);
+  })
+  .then((services) => {
+
+    app.services.hWebsiteEventsConsumer = services[0];
 
     return;
   });

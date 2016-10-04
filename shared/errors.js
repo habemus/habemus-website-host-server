@@ -25,10 +25,12 @@ exports.HWebsiteServerError = HWebsiteServerError;
  * @param {String} message
  */
 function InvalidOption(option, kind, message) {
-  HWebsiteServerError.call(this, message);
-
   this.option = option;
   this.kind = kind;
+
+  message = message || option + ' ' + kind;
+
+  HWebsiteServerError.call(this, message);
 }
 util.inherits(InvalidOption, HWebsiteServerError);
 InvalidOption.prototype.name = 'InvalidOption';

@@ -3,21 +3,17 @@ const express = require('express');
 const uuid    = require('uuid');
 
 // own
-const setupServices = require('./app/services');
-const setupEventHandlers = require('./app/event-handlers');
+const setupServices = require('./services');
+const setupEventHandlers = require('./event-handlers');
 
 /**
  * Function that starts the host server
  */
 function createWebsiteServer(options) {
   if (!options.apiVersion) { throw new Error('apiVersion is required'); }
-  if (!options.hWebsiteManagerURI) { throw new Error('hWebsiteManagerURI is required'); }
-  if (!options.hWebsiteManagerPrivateAuthToken) {
-    throw new Error('hWebsiteManagerPrivateAuthToken is required');
-  }
+  if (!options.hWebsiteURI) { throw new Error('hWebsiteURI is required'); }
+  if (!options.hWebsiteToken) { throw new Error('hWebsiteToken is required'); }
   if (!options.rabbitMQURI) { throw new Error('rabbitMQURI is required'); }
-  if (!options.websiteEventsExchange) { throw new Error('websiteEventsExchange is required'); }
-  // if (!options.redisURI) { throw new Error('redisURI is required'); }
   if (!options.websitesStorageFsRoot) { throw new Error('websitesStorageFsRoot is required'); }
   if (!options.websitesServerFsRoot) { throw new Error('websitesServerFsRoot is required'); }
   if (!options.hostDomain) { throw new Error('hostDomain is required'); }
@@ -40,14 +36,14 @@ function createWebsiteServer(options) {
     // instantiate controllers
     app.controllers = {};
     app.controllers.website =
-      require('./app/controllers/website')(app, options);
+      require('./controllers/website')(app, options);
 
     // instantiate middleware for usage in routes
     app.middleware = {};
     app.middleware.loadWebsite =
-      require('./app/middleware/load-website').bind(null, app);
+      require('./middleware/load-website').bind(null, app);
     app.middleware.ensureWebsiteReady =
-      require('./app/middleware/ensure-website-ready').bind(null, app);
+      require('./middleware/ensure-website-ready').bind(null, app);
     
     // define description route
     app.get('/hello', function (req, res) {
@@ -60,10 +56,10 @@ function createWebsiteServer(options) {
     });
   
     // load routes
-    require('./app/routes/website')(app, options);
+    require('./routes/website')(app, options);
 
     // load error-handlers
-    require('./app/error-handlers/h-website-server-errors')(app, options);
+    require('./error-handlers/h-website-server-errors')(app, options);
   
     // load cron jobs and start them
     app.cron = {};

@@ -7,7 +7,7 @@ const CronJob  = require('cron').CronJob;
 const Bluebird = require('bluebird');
 
 // constants
-const CONSTANTS = require('../../../../shared/constants');
+const CONSTANTS = require('../../shared/constants');
 
 // at midnight
 const DEFAULT_CRON_TIME = '00 00 00 * * *';

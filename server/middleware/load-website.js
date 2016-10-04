@@ -49,7 +49,7 @@ module.exports = function (app, options) {
 
     if (code) {
       // retrieve the website by its code
-      app.services.hwm.getWebsite(AUTH_TOKEN, code, 'byCode')
+      app.services.hWebsite.resolve(AUTH_TOKEN, code, 'byCode')
         .then((website) => {
           req.website = website;
           next();
@@ -64,7 +64,7 @@ module.exports = function (app, options) {
 
     } else {
       // retrieve the website by the domain
-      app.services.hwm.getWebsite(AUTH_TOKEN, domain, 'byActiveDomain')
+      app.services.hWebsite.resolve(AUTH_TOKEN, domain, 'byActiveDomain')
         .then((website) => {
           req.website = website;
           next();

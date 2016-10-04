@@ -9,7 +9,7 @@ const cpr      = require('cpr');
 const rootPathBuilder = require('root-path-builder');
 
 // own
-const badgeify = require('../../lib/badgeify');
+const badgeify = require('../lib/badgeify');
 
 // promisify
 Bluebird.promisifyAll(fs);
@@ -17,7 +17,7 @@ const rimrafAsync = Bluebird.promisify(rimraf);
 const cprAsync    = Bluebird.promisify(cpr);
 
 // constants
-const CONSTANTS = require('../../../shared/constants');
+const CONSTANTS = require('../../shared/constants');
 
 module.exports = function (app, options) {
 
@@ -190,7 +190,7 @@ module.exports = function (app, options) {
    * @return {Bluebird}
    */
   websiteCtrl.setupStorage = function (website) {
-    if (!website || !website._id || !website.readSignedURL) {
+    if (!website || !website._id || !website.signedURL) {
       return Bluebird.reject(new errors.InvalidOption('website', 'required'));
     }
 
@@ -205,7 +205,7 @@ module.exports = function (app, options) {
     return websiteCtrl.unlinkStorage(website)
       .then(() => {
         // load the files into the srcStorage (untransformed files)
-        return zipUtil.zipDownload(website.readSignedURL, srcDirPath)
+        return zipUtil.zipDownload(website.signedURL, srcDirPath)
       })
       .then(() => {
 

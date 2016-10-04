@@ -39,6 +39,17 @@ module.exports = function (app, options) {
 
       next();
     },
+
+    // first attempt to serve files
+    // serve files
+    serveStatic(function getRoot(req) {
+      return websitesServerRoot.prependTo(req.params.domain);
+    }, {
+      dotfiles: 'ignore',
+      fallthrough: true
+    }),
+
+    // then load the website
     app.middleware.loadWebsite({
       hostDomain: options.hostDomain,
     }),
