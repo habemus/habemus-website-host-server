@@ -8,7 +8,7 @@ const mockery  = require('mockery');
 const fse      = require('fs-extra');
 const cheerio  = require('cheerio');
 
-const HWebsiteClientPrivateClient = require('h-website-manager/client/private');
+const PrivateHWebsiteClient = require('h-website-client/private');
 
 const superagent = require('superagent');
 
@@ -30,41 +30,19 @@ describe('GET /websites/:domain/**/*', function () {
     });
 
     /**
-     * Mock HWebsiteClientPrivateClient
+     * Mock PrivateHWebsiteClient
      */
-    function HWMClientMock() {}
-    HWMClientMock.prototype.getWebsite = function (authToken, identifier, strategy) {
-
-      strategy = strategy || 'byActiveDomain';
-
-      switch (strategy) {
-        case 'byActiveDomain':
-
-          if (identifier === 'website-1.com') {
-            return Bluebird.resolve(ASSETS.website);
-          } else {
-            return Bluebird.reject(new HWebsiteClientPrivateClient.errors.NotFound('website', identifier));
-          }
-
-          break;
-        case 'byCode':
-
-          if (identifier === 'some-website-code') {
-            return Bluebird.resolve(ASSETS.website);
-          } else {
-            return Bluebird.reject(new HWebsiteClientPrivateClient.errors.NotFound('website', identifier));
-          }
-
-          break;
-        default: 
-
-          return Bluebird.reject(new HWebsiteClientPrivateClient.errors.NotFound('website', identifier));
-          break;
-      };
+    function MockPrivateHWebsite() {}
+    MockPrivateHWebsite.prototype.resolve = function (authToken, domain) {
+      if (domain === 'website-1.com') {
+        return Bluebird.resolve(ASSETS.website);
+      } else {
+        return Bluebird.reject(new PrivateHWebsiteClient.errors.NotFound('website', domain));
+      }
     }
     mockery.registerMock(
-      'h-website-manager/client/private',
-      HWMClientMock
+      'h-website-client/private',
+      MockPrivateHWebsite
     );
 
     const createWebsiteServer = require('../../../server');
@@ -100,7 +78,7 @@ describe('GET /websites/:domain/**/*', function () {
               domain: 'website-1.com'
             }
           ],
-          readSignedURL: 'http://localhost:9000/files/website-1.com.zip',
+          signedURL: 'http://localhost:9000/files/website-1.com.zip',
         };
 
         ASSETS.website = website;

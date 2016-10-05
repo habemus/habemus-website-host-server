@@ -127,7 +127,7 @@ describe('websiteCtrl', function () {
           reason: 'TestFailureReason',
         },
         activeDomainRecords: [],
-        readSignedURL: 'http://localhost:9000/files/website-1.com.zip',
+        signedURL: 'http://localhost:9000/files/website-1.com.zip',
       };
 
       return websiteCtrl.setupStorage(website)
@@ -172,7 +172,7 @@ describe('websiteCtrl', function () {
             domain: 'test-domain.com'
           }
         ],
-        readSignedURL: 'http://localhost:9000/files/website-1.com.zip',
+        signedURL: 'http://localhost:9000/files/website-1.com.zip',
       };
 
       return websiteCtrl.setupStorage(website)
@@ -215,7 +215,7 @@ describe('websiteCtrl', function () {
             domain: 'test-domain.com'
           }
         ],
-        readSignedURL: 'http://localhost:9000/files/website-1.com.zip',
+        signedURL: 'http://localhost:9000/files/website-1.com.zip',
       };
 
       return websiteCtrl.setupServers(website)
@@ -266,7 +266,7 @@ describe('websiteCtrl', function () {
             domain: 'test-domain.com'
           }
         ],
-        readSignedURL: 'http://localhost:9000/files/website-1.com.zip',
+        signedURL: 'http://localhost:9000/files/website-1.com.zip',
       };
 
       return websiteCtrl.setupStorage(website)
@@ -291,7 +291,7 @@ describe('websiteCtrl', function () {
             domain: 'test-domain.com'
           }
         ],
-        readSignedURL: 'http://localhost:9000/files/website-1.com.zip',
+        signedURL: 'http://localhost:9000/files/website-1.com.zip',
       };
 
       // same id, same code, new domain
@@ -310,7 +310,7 @@ describe('websiteCtrl', function () {
             domain: 'another-domain.com',
           }
         ],
-        readSignedURL: 'http://localhost:9000/files/website-1.com.zip',
+        signedURL: 'http://localhost:9000/files/website-1.com.zip',
       };
 
       return websiteCtrl.setupServers(websiteV1)

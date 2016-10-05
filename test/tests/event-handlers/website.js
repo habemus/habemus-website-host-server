@@ -6,6 +6,8 @@ const should   = require('should');
 const Bluebird = require('bluebird');
 const amqplib  = require('amqplib');
 
+const HMQEventsPublisher = require('h-mq-events/publisher');
+
 // load zip-util before mocking it
 const zipUtil  = require('zip-util');
 
@@ -30,14 +32,14 @@ describe('website events', function () {
         // create the website server application
         ASSETS.websiteServerApp = createWebsiteServer(options);
 
+        // create the event publisher
+        ASSETS.websiteEventsPublisher = new HMQEventsPublisher({
+          name: 'website-events'
+        });
+
         return Bluebird.all([
           ASSETS.websiteServerApp.ready,
-          amqplib.connect(options.rabbitMQURI).then((conn) => {
-            return conn.createChannel();
-          })
-          .then((channel) => {
-            ASSETS.rabbitMQChannel = channel;
-          }),
+          ASSETS.websiteEventsPublisher.connect(options.rabbitMQURI),
         ]);
       })
       .catch((err) => {
@@ -88,18 +90,9 @@ describe('website events', function () {
         .then(() => {
 
           // publish an update
-          var payload = {
+          ASSETS.websiteEventsPublisher.publish('updated', {
             website: websiteV2,
-          };
-
-          ASSETS.rabbitMQChannel.publish(
-            ASSETS.options.websiteEventsExchange,
-            'website.updated',
-            new Buffer(JSON.stringify(payload)),
-            {
-              contentType: 'application/json',
-            }
-          );
+          });
 
           setTimeout(function () {
 
@@ -110,6 +103,7 @@ describe('website events', function () {
                 
                 done();
               })
+              .catch(done);
 
           }, 4000);
         });
@@ -132,18 +126,9 @@ describe('website events', function () {
       };
 
       // publish an update
-      var payload = {
+      ASSETS.websiteEventsPublisher.publish('updated', {
         website: website,
-      };
-
-      ASSETS.rabbitMQChannel.publish(
-        ASSETS.options.websiteEventsExchange,
-        'website.updated',
-        new Buffer(JSON.stringify(payload)),
-        {
-          contentType: 'application/json',
-        }
-      );
+      });
 
       setTimeout(function () {
 
@@ -154,6 +139,7 @@ describe('website events', function () {
             
             done();
           })
+          .catch(done);
 
       }, 4000);
 
@@ -188,18 +174,9 @@ describe('website events', function () {
         .then(() => {
 
           // publish a deletion
-          var payload = {
-            website: website,
-          };
-
-          ASSETS.rabbitMQChannel.publish(
-            ASSETS.options.websiteEventsExchange,
-            'website.deleted',
-            new Buffer(JSON.stringify(payload)),
-            {
-              contentType: 'application/json',
-            }
-          );
+          ASSETS.websiteEventsPublisher.publish('deleted', {
+            website: website
+          });
 
           setTimeout(function () {
 
@@ -210,6 +187,7 @@ describe('website events', function () {
                 
                 done();
               })
+              .catch(done);
 
           }, 4000);
         })
@@ -230,18 +208,9 @@ describe('website events', function () {
       };
 
       // publish a deletion
-      var payload = {
-        website: website,
-      };
-
-      ASSETS.rabbitMQChannel.publish(
-        ASSETS.options.websiteEventsExchange,
-        'website.deleted',
-        new Buffer(JSON.stringify(payload)),
-        {
-          contentType: 'application/json',
-        }
-      );
+      ASSETS.websiteEventsPublisher.publish('deleted', {
+        website: website
+      });
 
       setTimeout(function () {
 
@@ -272,19 +241,10 @@ describe('website events', function () {
         signedURL: 'http://localhost:9000/files/website-1.com.zip',
       };
 
-      // publish a deletion
-      var payload = {
-        website: website,
-      };
-
-      ASSETS.rabbitMQChannel.publish(
-        ASSETS.options.websiteEventsExchange,
-        'website.created',
-        new Buffer(JSON.stringify(payload)),
-        {
-          contentType: 'application/json',
-        }
-      );
+      // publish a creation
+      ASSETS.websiteEventsPublisher.publish('created', {
+        website: website
+      });
 
       setTimeout(function () {
 
@@ -295,6 +255,7 @@ describe('website events', function () {
             
             done();
           })
+          .catch(done);
 
       }, 4000);
     });

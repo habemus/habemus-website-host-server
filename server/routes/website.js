@@ -41,7 +41,6 @@ module.exports = function (app, options) {
     },
 
     // first attempt to serve files
-    // serve files
     serveStatic(function getRoot(req) {
       return websitesServerRoot.prependTo(req.params.domain);
     }, {
@@ -49,7 +48,7 @@ module.exports = function (app, options) {
       fallthrough: true
     }),
 
-    // then load the website
+    // then lazily load the website
     app.middleware.loadWebsite({
       hostDomain: options.hostDomain,
     }),
@@ -69,7 +68,7 @@ module.exports = function (app, options) {
      * with in another error handler.
      */
     function handleWebsiteFileNotFound(err, req, res, next) {
-
+      
       if (err.status === 404) {
         // check if there is an error page for the website
         

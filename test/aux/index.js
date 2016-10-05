@@ -23,9 +23,8 @@ exports.tmpPath = TMP_PATH;
 exports.defaultOptions = {
   apiVersion: '0.0.0',
   rabbitMQURI: RABBIT_MQ_URI,
-  websiteEventsExchange: 'website-events',
-  hWebsiteManagerURI: 'http://website-manager-uri.com',
-  hWebsiteManagerPrivateAuthToken: 'TOKEN',
+  hWebsiteURI: 'http://website-manager-uri.com',
+  hWebsiteToken: 'TOKEN',
   websitesStorageFsRoot: TMP_PATH + '/websites-storage',
   websitesServerFsRoot: TMP_PATH + '/websites-server',
   hostDomain: 'habemus.website',

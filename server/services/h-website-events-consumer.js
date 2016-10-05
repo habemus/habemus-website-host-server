@@ -5,7 +5,7 @@ module.exports = function (app, options) {
 
   var hWebsiteEventsConsumer = new HMQEventsConsumer({
     name: 'website-events',
-    events: ['updated', 'deleted']
+    events: ['created', 'updated', 'deleted']
   });
   
   return hWebsiteEventsConsumer.connect(app.services.rabbitMQ.connection)

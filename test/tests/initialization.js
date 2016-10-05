@@ -45,20 +45,20 @@ describe('server initialization', function () {
     });
   });
 
-  it('should require hWebsiteManagerURI', function () {
+  it('should require hWebsiteURI', function () {
     var opts = aux.genOptions();
 
-    delete opts.hWebsiteManagerURI;
+    delete opts.hWebsiteURI;
 
     assert.throws(function () {
       createWebsiteServer(opts);
     });
   });
 
-  it('should require hWebsiteManagerPrivateAuthToken', function () {
+  it('should require hWebsiteToken', function () {
     var opts = aux.genOptions();
 
-    delete opts.hWebsiteManagerPrivateAuthToken;
+    delete opts.hWebsiteToken;
 
     assert.throws(function () {
       createWebsiteServer(opts);
@@ -69,16 +69,6 @@ describe('server initialization', function () {
     var opts = aux.genOptions();
 
     delete opts.rabbitMQURI;
-
-    assert.throws(function () {
-      createWebsiteServer(opts);
-    });
-  });
-
-  it('should require websiteEventsExchange', function () {
-    var opts = aux.genOptions();
-
-    delete opts.websiteEventsExchange;
 
     assert.throws(function () {
       createWebsiteServer(opts);
