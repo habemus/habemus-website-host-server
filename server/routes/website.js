@@ -51,6 +51,7 @@ module.exports = function (app, options) {
     // then lazily load the website
     app.middleware.loadWebsite({
       hostDomain: options.hostDomain,
+      hWebsiteToken: options.hWebsiteToken,
     }),
     app.middleware.ensureWebsiteReady(),
 
