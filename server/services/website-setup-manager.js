@@ -28,7 +28,17 @@ module.exports = function (app, options) {
    */
   setupManager.ensureReady = cachePromiseFn(
     function (website) {
-      return app.controllers.website.areServersReady(website)
+      // first verify storage
+      return app.controllers.website.isStorageReady(website)
+        .then((storageReady) => {
+          if (!storageReady) {
+            return app.controllers.website.setupStorage(website);
+          }
+        })
+        .then(() => {
+          // then verify servers
+          return app.controllers.website.areServersReady(website);
+        })
         .then((serversReady) => {
           if (!serversReady) {
             return app.controllers.website.setupServers(website);

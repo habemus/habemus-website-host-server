@@ -156,7 +156,19 @@ module.exports = function (app, options) {
       return Bluebird.reject(new errors.InvalidOption('website', 'required'));
     }
 
-    var subdomainDirPath = serverRoot.prependTo(website.code + '.' + HOST_DOMAIN);
+    /**
+     * Subdomain of the given website depends on whether the
+     * website has a specified versionCode
+     */
+    var subdomainDirPath;
+
+    if (website.versionCode) {
+      subdomainDirPath = serverRoot.prependTo(
+        website.versionCode + '.' + website.code + '.' + HOST_DOMAIN);
+    } else {
+      subdomainDirPath = serverRoot.prependTo(website.code + '.' + HOST_DOMAIN);
+    }
+    
     var customDomainDirPaths = website.activeDomainRecords.map((record) => {
       return serverRoot.prependTo(record.domain);
     });
@@ -264,7 +276,16 @@ module.exports = function (app, options) {
       .then(() => {
 
         // link the 'subdomain-server' to the source version of the website
-        var subdomainDirPath = serverRoot.prependTo(website.code + '.' + HOST_DOMAIN);
+        // the subdomain depends on whether the website has a specific versionCode
+        // or not
+        var subdomainDirPath;
+
+        if (website.versionCode) {
+          subdomainDirPath = serverRoot.prependTo(
+            website.versionCode + '.' + website.code + '.' + HOST_DOMAIN);
+        } else {
+          subdomainDirPath = serverRoot.prependTo(website.code + '.' + HOST_DOMAIN);
+        }
         var subdomainServerPromise = fs.symlinkAsync(srcDirPath, subdomainDirPath, 'dir');
 
         // make the active domain records to the correct version (badged or unbadged)
