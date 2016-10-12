@@ -3,7 +3,7 @@ const Bluebird = require('bluebird');
 
 module.exports = function (app, options) {
 
-  app.services.hWebsiteEventsConsumer.on('updated', function handleUpdated(payload) {
+  app.services.hWebsiteEventsConsumer.on('deployed', function handleUpdated(payload) {
 
     /**
      * The website's data comes in the `.website` property of 
@@ -27,11 +27,11 @@ module.exports = function (app, options) {
         }
       })
       .then(() => {
-        app.services.logging.info('event:website.updated - event handled', website);
+        app.services.logging.info('event:website.deployed - event handled', website);
       })
       .catch((err) => {
 
-        app.services.logging.error('event:website.updated error', err);
+        app.services.logging.error('event:website.deployed error', err);
 
         // TODO: study requeuing for h-mq-events!!!
         // nack and requeue, so that we can try again
