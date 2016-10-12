@@ -53,7 +53,7 @@ describe('website events', function () {
     return aux.teardown();
   });
 
-  describe('website.updated', function () {
+  describe('website.deployed', function () {
 
     it('should update a website if it is at the server', function (done) {
 
@@ -90,7 +90,7 @@ describe('website events', function () {
         .then(() => {
 
           // publish an update
-          ASSETS.websiteEventsPublisher.publish('updated', {
+          ASSETS.websiteEventsPublisher.publish('deployed', {
             website: websiteV2,
           });
 
@@ -126,7 +126,7 @@ describe('website events', function () {
       };
 
       // publish an update
-      ASSETS.websiteEventsPublisher.publish('updated', {
+      ASSETS.websiteEventsPublisher.publish('deployed', {
         website: website,
       });
 
@@ -221,41 +221,6 @@ describe('website events', function () {
             
             done();
           })
-
-      }, 4000);
-    });
-  });
-
-  describe('website.created', function () {
-    it('should setup the website', function (done) {
-      this.timeout(5000);
-
-      var website = {
-        _id: 'some-website-id',
-        code: 'some-website-code',
-        billingStatus: {
-          value: 'disabled',
-          reason: 'TestFailureReason',
-        },
-        activeDomainRecords: [],
-        signedURL: 'http://localhost:9000/files/website-1.com.zip',
-      };
-
-      // publish a creation
-      ASSETS.websiteEventsPublisher.publish('created', {
-        website: website
-      });
-
-      setTimeout(function () {
-
-        // check that the website has been removed
-        ASSETS.websiteServerApp.controllers.website.areServersReady(website)
-          .then((ready) => {
-            ready.should.eql(true);
-            
-            done();
-          })
-          .catch(done);
 
       }, 4000);
     });
