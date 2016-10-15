@@ -1,4 +1,5 @@
 // native
+const fs   = require('fs');
 const path = require('path');
 
 // third-party
@@ -20,6 +21,12 @@ const INDEX_HTML_BASENAMES = [
   'index.html',
   'index.htm',
 ];
+
+/**
+ * Template of the badge
+ */
+const BADGE_TEMPLATE = fs.readFileSync(
+  path.join(__dirname, '../../templates/habemus-badge.html'), 'utf8');
 
 /**
  * Function that checks whether the file is an 'index.html' page
@@ -49,7 +56,7 @@ function badgeify(dirPath) {
     vinylFs.src(glob)
       .pipe(gulpIf(isIndexHTML, gulpAppendHTML({
         html: [
-          '<div id="test">Heeeey!</div>'
+          BADGE_TEMPLATE
         ],
       })))
       .pipe(vinylFs.dest(dirPath))

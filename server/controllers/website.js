@@ -67,6 +67,10 @@ module.exports = function (app, options) {
 
     activeDomainRecords.forEach((record) => {
       domains.push(record.domain);
+
+      if (record.enableWwwAlias) {
+        domains.push('www.' + record.domain);
+      }
     });
 
     return Bluebird.all(domains.map((domain) => {
