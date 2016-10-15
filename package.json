@@ -37,6 +37,7 @@
     "gulp": "^3.9.1",
     "gulp-istanbul": "^1.1.1",
     "gulp-mocha": "^3.0.1",
+    "gulp-nodemon": "^2.2.1",
     "mockery": "^1.7.0",
     "server-destroy": "^1.0.1",
     "should": "^11.1.0",

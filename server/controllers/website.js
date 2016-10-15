@@ -169,9 +169,15 @@ module.exports = function (app, options) {
       subdomainDirPath = serverRoot.prependTo(website.code + '.' + HOST_DOMAIN);
     }
     
-    var customDomainDirPaths = website.activeDomainRecords.map((record) => {
-      return serverRoot.prependTo(record.domain);
-    });
+    var customDomainDirPaths = website.activeDomainRecords.reduce((res, record) => {
+      res.push(serverRoot.prependTo(record.domain));
+
+      if (record.enableWwwAlias) {
+        res.push(serverRoot.prependTo('www.' + record.domain));
+      }
+
+      return res;
+    }, []);
 
     var _allDomainsDirPaths = customDomainDirPaths.concat([subdomainDirPath]);
 
@@ -291,8 +297,15 @@ module.exports = function (app, options) {
         // make the active domain records to the correct version (badged or unbadged)
         var customDomainStoragePath = useBadgedVersion ? badgedDirPath : srcDirPath;
         var customDomainServerPromises = website.activeDomainRecords.map((record) => {
-          var domainDirPath = serverRoot.prependTo(record.domain);
-          return fs.symlinkAsync(customDomainStoragePath, domainDirPath, 'dir');
+          var domainDirPath    = serverRoot.prependTo(record.domain);
+          var domainWWWDirPath = serverRoot.prependTo('www.' + record.domain);
+
+          return Bluebird.all([
+            fs.symlinkAsync(customDomainStoragePath, domainDirPath, 'dir'),
+            // if the `enableWwwAlias` is set to true,
+            // create the 'www' server as well
+            record.enableWwwAlias ? fs.symlinkAsync(customDomainStoragePath, domainWWWDirPath, 'dir') : undefined,
+          ]);
         });
 
         return Bluebird.all(customDomainServerPromises.concat([subdomainServerPromise]));
