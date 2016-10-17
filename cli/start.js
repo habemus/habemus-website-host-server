@@ -1,29 +1,36 @@
 // native
 const http = require('http');
 
-// internal dependencies
-const pkg = require('../package.json');
+// third-party
+const envOptions = require('@habemus/env-options');
 
 // internal dependencies
 const hWebsiteServer = require('../server');
 
-var options = {
-  port: process.env.PORT,
-  apiVersion: pkg.version,
+var options = envOptions({
+  port: 'env:PORT',
+  apiVersion: 'pkg:version',
 
-  rabbitMQURI: process.env.RABBIT_MQ_URI,
+  hostDomain: 'env:HOST_DOMAIN',
 
-  hWebsiteURI: process.env.H_WEBSITE_URI,
-  hWebsiteToken: process.env.H_WEBSITE_TOKEN,
+  rabbitMQURI: 'fs:RABBIT_MQ_URI_PATH',
 
-  websitesStorageFsRoot: process.env.WEBSITES_STORAGE_FS_ROOT,
-  websitesServerFsRoot: process.env.WEBSITES_SERVER_FS_ROOT,
+  hWebsiteURI: 'env:H_WEBSITE_URI',
+  hWebsiteToken: 'env:H_WEBSITE_TOKEN',
 
-  hostDomain: process.env.HOST_DOMAIN,
-};
+  websitesStorageFsRoot: 'env:WEBSITES_STORAGE_FS_ROOT',
+  websitesServerFsRoot: 'env:WEBSITES_SERVER_FS_ROOT',
+});
 
 // instantiate the app
 var app = hWebsiteServer(options);
+
+app.ready.then(() => {
+  console.log('h-website-server setup ready');
+})
+.catch((err) => {
+  console.warn('h-website-server setup error', err);
+});
 
 // create http server and pass express app as callback
 var server = http.createServer(app);

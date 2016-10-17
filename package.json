@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@habemus/env-options": "^0.2.0",
     "amqplib": "^0.4.2",
     "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
