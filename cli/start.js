@@ -12,14 +12,13 @@ var options = envOptions({
   apiVersion: 'pkg:version',
 
   hostDomain: 'env:HOST_DOMAIN',
+  websitesStorageFsRoot: 'env:WEBSITES_STORAGE_FS_ROOT',
+  websitesServerFsRoot: 'env:WEBSITES_SERVER_FS_ROOT',
 
   rabbitMQURI: 'fs:RABBIT_MQ_URI_PATH',
 
   hWebsiteURI: 'env:H_WEBSITE_URI',
-  hWebsiteToken: 'env:H_WEBSITE_TOKEN',
-
-  websitesStorageFsRoot: 'env:WEBSITES_STORAGE_FS_ROOT',
-  websitesServerFsRoot: 'env:WEBSITES_SERVER_FS_ROOT',
+  hWebsiteToken: 'fs:H_WEBSITE_TOKEN_PATH',
 });
 
 // instantiate the app
@@ -30,6 +29,7 @@ app.ready.then(() => {
 })
 .catch((err) => {
   console.warn('h-website-server setup error', err);
+  process.exit(1);
 });
 
 // create http server and pass express app as callback
@@ -37,5 +37,5 @@ var server = http.createServer(app);
 
 // start listening
 server.listen(options.port, function () {
-  console.log('hWebsiteServer listening at port %s', options.port);
+  console.log('h-website-server listening at port %s', options.port);
 });

@@ -3,8 +3,6 @@ MAINTAINER Simon Fan <sf@habem.us>
 
 COPY . /application
 
-WORKDIR /application
-
 # port must match exposed port
 ENV PORT 5000
 
