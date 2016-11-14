@@ -6,12 +6,8 @@ const URLPattern = require('url-pattern');
 module.exports = function (app, options) {
 
   const H_WEBSITE_TOKEN = options.hWebsiteToken;
-  const HOST_DOMAIN     = options.hostDomain;
 
   if (!H_WEBSITE_TOKEN) { throw new Error('hWebsiteToken is required'); }
-  if (!HOST_DOMAIN) { throw new Error('hostDomain is required'); }
-
-  const hostPattern = new URLPattern(':code.' + HOST_DOMAIN);
 
   const errors = app.errors;
 

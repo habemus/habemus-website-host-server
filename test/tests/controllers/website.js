@@ -147,7 +147,7 @@ describe('websiteCtrl', function () {
             'utf8'
           );
           var $ = cheerio.load(badgedIndexHTML);
-          $('#test').length.should.eql(1);
+          $('#habemus-badge').length.should.eql(1);
         })
         .catch((err) => {
           console.log(err);
