@@ -1,4 +1,4 @@
-FROM node:5.0.0
+FROM node:6.9.4
 MAINTAINER Simon Fan <sf@habem.us>
 
 COPY . /application
