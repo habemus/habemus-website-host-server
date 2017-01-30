@@ -44,6 +44,7 @@ module.exports = function (app, options) {
     serveStatic(function getRoot(req) {
       return websitesServerRoot.prependTo(req.params.domain);
     }, {
+      // TODO: nginx does serve dot files. we should make them behave exactly the same
       dotfiles: 'ignore',
       fallthrough: true
     }),
