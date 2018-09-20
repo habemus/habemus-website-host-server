@@ -1,9 +1,9 @@
 // third-party
-const HMQEventsConsumer = require('h-mq-events/consumer');
+const AMQPEventsConsumer = require('@habemus/amqp-events/consumer');
 
 module.exports = function (app, options) {
 
-  var hWebsiteEventsConsumer = new HMQEventsConsumer({
+  var hWebsiteEventsConsumer = new AMQPEventsConsumer({
     name: 'website-events',
     events: ['deployed', 'deleted']
   });

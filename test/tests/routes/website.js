@@ -8,7 +8,7 @@ const mockery  = require('mockery');
 const fse      = require('fs-extra');
 const cheerio  = require('cheerio');
 
-const PrivateHWebsiteClient = require('h-website-client/private');
+const PrivateHWebsiteClient = require('habemus-website-client/private');
 
 const superagent = require('superagent');
 
@@ -41,7 +41,7 @@ describe('GET /websites/:domain/**/*', function () {
       }
     }
     mockery.registerMock(
-      'h-website-client/private',
+      'habemus-website-client/private',
       MockPrivateHWebsite
     );
 

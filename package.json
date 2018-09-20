@@ -1,6 +1,6 @@
 {
-  "name": "h-website-server",
-  "version": "1.0.1",
+  "name": "habemus-website-host-server",
+  "version": "2.0.0",
   "description": "",
   "main": "server/index.js",
   "scripts": {
@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@habemus/amqp-events": "^1.0.0",
     "@habemus/env-options": "^0.2.0",
     "amqplib": "^0.4.2",
     "bluebird": "^3.4.6",
@@ -20,18 +21,17 @@
     "express": "^4.14.0",
     "gulp-if": "^2.0.1",
     "gulp-plumber": "^1.1.0",
-    "h-mq-events": "git+ssh://git@bitbucket.org/habemus-tutti/h-mq-events.git",
-    "h-website-client": "git+ssh://git@bitbucket.org/habemus-tutti/h-website-client.git",
+    "habemus-website-client": "git+https://github.com/habemus/habemus-website-client.git",
     "json-message": "^2.0.0-beta.5",
     "jsonwebtoken": "^7.1.9",
     "redis": "^2.6.2",
     "rimraf": "^2.5.4",
-    "root-path-builder": "git+ssh://git@bitbucket.org/habemus-tutti/root-path-builder.git",
-    "serve-static": "git+ssh://git@github.com/habemus/serve-static.git",
+    "root-path-builder": "^1.0.0",
+    "serve-static": "git+https://github.com/habemus/serve-static.git",
     "superagent": "^2.2.0",
     "through2": "^2.0.1",
     "url-pattern": "^1.0.1",
-    "zip-util": "git+ssh://git@bitbucket.org/habemus-tutti/zip-util.git"
+    "zip-util": "git+https://github.com/habemus/zip-util.git"
   },
   "devDependencies": {
     "fs-extra": "^0.30.0",

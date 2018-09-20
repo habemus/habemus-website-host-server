@@ -6,7 +6,7 @@ const should   = require('should');
 const Bluebird = require('bluebird');
 const amqplib  = require('amqplib');
 
-const HMQEventsPublisher = require('h-mq-events/publisher');
+const AMQPEventsPublisher = require('@habemus/amqp-events/publisher');
 
 // load zip-util before mocking it
 const zipUtil  = require('zip-util');
@@ -33,7 +33,7 @@ describe('website events', function () {
         ASSETS.websiteServerApp = createWebsiteServer(options);
 
         // create the event publisher
-        ASSETS.websiteEventsPublisher = new HMQEventsPublisher({
+        ASSETS.websiteEventsPublisher = new AMQPEventsPublisher({
           name: 'website-events'
         });
 

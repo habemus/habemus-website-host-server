@@ -10,7 +10,7 @@ const fse = require('fs-extra');
 // own deps
 const fileServer = require('./file-server');
 
-const RABBIT_MQ_URI = 'amqp://192.168.99.100';
+const RABBIT_MQ_URI = 'amqp://localhost';
 const FIXTURES_PATH = path.join(__dirname, '../fixtures');
 const TMP_PATH = path.join(__dirname, '../tmp');
 

@@ -33,7 +33,7 @@ module.exports = function (app, options) {
 
         app.services.logging.error('event:website.deployed error', err);
 
-        // TODO: study requeuing for h-mq-events!!!
+        // TODO: study requeuing for @habemus/amqp-events
         // nack and requeue, so that we can try again
         // return rabbitMQSvc.channel.nack(message, false, true);
       });
